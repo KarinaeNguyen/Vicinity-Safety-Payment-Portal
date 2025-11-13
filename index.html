@@ -1,1 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Portal | VICINITY SAFETY</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Define the primary red color for Techcombank aesthetic */
+        .tcb-red {
+            background-color: #d41c2c;
+        }
+        .tcb-text-red {
+            color: #d41c2c;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
 
+        // Function to handle form submission (simulates responding to the customer)
+        function handleSubmit(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+
+            const formContainer = document.getElementById('details-form');
+            const confirmationBox = document.getElementById('confirmation-box');
+            const confirmationText = document.getElementById('confirmation-text');
+
+            // 1. Update the confirmation message with the submitted details
+            confirmationText.innerHTML = `
+                <div class="space-y-3">
+                    <p class="font-semibold text-lg tcb-text-red">Order Details Submitted Successfully!</p>
+                    <p class="text-gray-700">Your details have been recorded. Please complete the transfer using the QR code above.</p>
+                    <hr class="border-gray-200">
+                    <p class="text-sm">
+                        <span class="font-medium text-gray-900">Name:</span> ${name}<br>
+                        <span class="font-medium text-gray-900">Phone:</span> ${phone}
+                    </p>
+                    <p class="text-xs text-gray-500 mt-2">
+                        *Note: Your bank's description should include the details above for reconciliation.
+                    </p>
+                </div>
+            `;
+
+            // 2. Hide the form and show the confirmation message
+            formContainer.classList.add('hidden');
+            confirmationBox.classList.remove('hidden');
+        }
+
+        // Simple utility function to copy text to clipboard
+        function copyText(text, elementId) {
+            if (!navigator.clipboard) {
+                // Fallback for older browsers or restricted environments (like iframes)
+                const tempInput = document.createElement('textarea');
+                tempInput.value = text;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+            } else {
+                navigator.clipboard.writeText(text).catch(err => {
+                    console.error('Could not copy text: ', err);
+                });
+            }
+
+            const button = document.getElementById(elementId);
+            button.innerHTML = '<svg class="w-4 h-4 mr-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Copied!';
+            setTimeout(() => {
+                button.innerHTML = '<svg class="w-4 h-4 mr-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v4m4-4v4m4-4v4m-4-4h.01M8 11h.01M16 11h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Copy Account No.';
+            }, 3000);
+        }
+    </script>
+</head>
+
+<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4 font-sans">
+
+    <!-- Payment Card Container -->
+    <div class="w-full max-w-sm bg-white p-6 rounded-2xl shadow-xl space-y-6">
+
+        <!-- Header Section -->
+        <div class="text-center space-y-1">
+            <h1 class="text-xl font-bold text-gray-800">VICINITY SAFETY CO., LTD</h1>
+            <div class="flex items-center justify-center text-gray-500 text-sm">
+                <span>Account No: 318851299</span>
+                <button id="copy-btn" onclick="copyText('318851299', 'copy-btn')" 
+                        class="ml-2 text-xs text-blue-500 hover:text-blue-700 transition duration-150">
+                    <svg class="w-4 h-4 mr-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v4m4-4v4m4-4v4m-4-4h.01M8 11h.01M16 11h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Copy Account No.
+                </button>
+            </div>
+        </div>
+
+        <!-- QR Code Display -->
+        <div class="p-4 bg-white rounded-xl shadow-inner border border-gray-100">
+            <!-- Image now referenced with a relative path -->
+            <img src="Company Bank QR.png" 
+                 alt="VietQR Payment Code for Techcombank" 
+                 class="w-full h-auto rounded-lg">
+        </div>
+
+        <!-- Instructions -->
+        <div class="text-sm text-gray-600 space-y-2 p-3 bg-red-50 rounded-lg border-l-4 border-tcb-red">
+            <p class="font-semibold text-gray-800">Payment Steps:</p>
+            <ol class="list-decimal list-inside space-y-1">
+                <li>Submit your Name and Phone Number below.</li>
+                <li>Scan the QR code with your mobile banking app to pay.</li>
+                <li>Verify that the recipient is **VICINITY SAFETY CO., LTD**.</li>
+            </ol>
+        </div>
+        
+        <!-- Order Details Form (Visible Initially) -->
+        <form id="details-form" onsubmit="handleSubmit(event)" class="space-y-4">
+            <h2 class="text-lg font-semibold text-gray-800 border-b pb-2">Order Details Submission</h2>
+
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Your Name (for order tracking)</label>
+                <input type="text" id="name" name="name" required
+                       placeholder="e.g., John Smith"
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-tcb-red focus:border-tcb-red sm:text-sm">
+            </div>
+
+            <div>
+                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Your Phone Number</label>
+                <input type="tel" id="phone" name="phone" required
+                       pattern="[0-9]{8,15}"
+                       title="Phone number must be 8-15 digits long"
+                       placeholder="e.g., 09xxxxxxxx"
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-tcb-red focus:border-tcb-red sm:text-sm">
+            </div>
+
+            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white tcb-red hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tcb-red transition duration-150">
+                Submit Order Details
+            </button>
+        </form>
+
+        <!-- Confirmation Message (Hidden Initially) -->
+        <div id="confirmation-box" class="hidden p-4 rounded-lg bg-green-50 border border-green-300 shadow-md">
+            <div class="flex items-start">
+                <svg class="h-6 w-6 text-green-500 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div id="confirmation-text" class="text-sm text-gray-900">
+                    <!-- Content populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
