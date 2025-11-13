@@ -1,18 +1,24 @@
 <!DOCTYPE html>
-<html lang="vi"> <head>
+<html lang="vi">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-translate="title">QR Payment Gate | VICINITY SAFETY</title>
+    <title data-translate="title">Cổng Thanh Toán QR | VICINITY SAFETY</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script src="https://www.google.com/recaptcha/enterprise.js?render=6Ldm0AssAAAAAMIE9rP6GwaCTGvgA2RYBWOBBE7aW" async defer></script>
     
     <style>
-        /* CSS remains the same */
-        .g-blue { background-color: #4285F4; }
-        .g-text-blue { color: #4285F4; }
+        /* Google-inspired design colors */
+        .g-blue {
+            background-color: #4285F4;
+        }
+        .g-text-blue {
+            color: #4285F4;
+        }
         .flag-button {
-            font-size: 1.5rem; 
+            font-size: 1.5rem; /* Makes the flag icons clearly visible and clickable */
             line-height: 1;
             padding: 0 4px;
             cursor: pointer;
@@ -21,7 +27,9 @@
             border: none;
             background: none;
         }
-        .flag-button:hover, .flag-button.active { opacity: 1; }
+        .flag-button:hover, .flag-button.active {
+            opacity: 1;
+        }
     </style>
     
     <script>
@@ -35,7 +43,7 @@
             }
         }
         
-        // --- TRANSLATION DATA remains the same ---
+        // --- DỮ LIỆU DỊCH THUẬT (TRANSLATION DATA) ---
         const translations = {
             en: {
                 title: "QR Payment Gate | VICINITY SAFETY", company_name: "VICINITY SAFETY", secure_payment: "SECURE PAYMENT", account_no: "Account No:", copy_no: "Copy No.", payment_steps_title: "Payment Steps:",
@@ -60,13 +68,13 @@
             }
         };
 
-        // THAY ĐỔI QUAN TRỌNG: Thiết lập ngôn ngữ mặc định là tiếng Việt
+        // Thiết lập ngôn ngữ mặc định là tiếng Việt
         let currentLang = 'vi';
 
         function changeLanguage(lang) {
             currentLang = lang;
             document.title = translations[lang].title;
-            localStorage.setItem('paymentLang', lang); // Vẫn lưu tùy chọn người dùng
+            localStorage.setItem('paymentLang', lang); // Save user preference
 
             // Update active state of flag buttons
             document.querySelectorAll('.flag-button').forEach(btn => {
@@ -102,12 +110,11 @@
 
         // Initialize language
         document.addEventListener('DOMContentLoaded', () => {
-            // Lấy ngôn ngữ đã lưu HOẶC sử dụng 'vi' làm mặc định
-            const storedLang = localStorage.getItem('paymentLang') || 'vi'; 
+            const storedLang = localStorage.getItem('paymentLang') || 'vi'; // Ưu tiên 'vi'
             changeLanguage(storedLang);
         });
         
-        // --- EXISTING UTILITY FUNCTIONS (remain the same) ---
+        // --- CÁC HÀM TIỆN ÍCH (UTILITY FUNCTIONS) ---
         
         function showValidationError(message) {
             const errorElement = document.getElementById('validation-error');
@@ -132,7 +139,7 @@
             input.value = formatted;
         }
 
-        // ASYNCHRONOUS FORM SUBMISSION using reCAPTCHA Enterprise
+        // GỬI FORM BẤT ĐỒNG BỘ sử dụng reCAPTCHA Enterprise
         async function handleSubmit(event) {
             event.preventDefault();
 
@@ -154,7 +161,13 @@
                     // Site Key used for execution: 6Ldm0AssAAAAAMIE9rP6GwaCTGvgA2RYBWOBBE7aW
                     const token = await grecaptcha.enterprise.execute('6Ldm0AssAAAAAMIE9rP6GwaCTGvgA2RYBWOBBE7aW', {action: 'submit_payment_details'});
                     
-                    // --- PASSED SECURITY CHECK (Client-side) ---
+                    // LƯU Ý QUAN TRỌNG: Tại điểm này, bạn phải gửi token và dữ liệu (name, phone)
+                    // đến máy chủ của mình để xác thực reCAPTCHA và lưu đơn hàng.
+                    // Nếu không có backend, việc này là không an toàn.
+                    // Ví dụ: await fetch('/api/submit', { method: 'POST', body: JSON.stringify({ name, phone, token }) });
+
+                    
+                    // --- CHUYỂN TRẠNG THÁI (Client-side confirmation) ---
                     
                     const formContainer = document.getElementById('details-form');
                     const confirmationBox = document.getElementById('confirmation-box');
@@ -188,7 +201,6 @@
         }
 
         function copyText(text, elementId) {
-            // ... (copy logic remains the same)
             if (!navigator.clipboard) {
                 const tempInput = document.createElement('textarea');
                 tempInput.value = text;
@@ -204,7 +216,8 @@
 
             const button = document.getElementById(elementId);
             const originalText = button.textContent;
-            button.innerHTML = '<svg class="w-4 h-4 mr-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Đã sao chép!'; // Cập nhật text "Copied"
+            // Cập nhật text "Copied" thành "Đã sao chép!"
+            button.innerHTML = '<svg class="w-4 h-4 mr-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Đã sao chép!'; 
             setTimeout(() => {
                 button.textContent = originalText;
             }, 3000);
@@ -213,18 +226,18 @@
 </head>
 
 <body class="bg-gray-50 flex items-center justify-center min-h-screen p-4 font-sans">
+
     <div class="w-full max-w-sm bg-white p-6 rounded-xl shadow-lg border border-gray-100 space-y-6">
 
         <div class="flex justify-end space-x-1">
             <button id="flag-en" class="flag-button" onclick="changeLanguage('en')" title="English">🇺🇸</button>
-            <button id="flag-vi" class="flag-button" onclick="changeLanguage('vi')" title="Tiếng Việt">🇻🇳</button>
+            <button id="flag-vi" class="flag-button active" onclick="changeLanguage('vi')" title="Tiếng Việt">🇻🇳</button>
             <button id="flag-zh" class="flag-button" onclick="changeLanguage('zh')" title="中文">🇨🇳</button>
         </div>
 
-        <div class="text-center space-y-2">
-             <div class="flex items-center justify-center text-gray-800 text-lg">
-                <svg class="w-6 h-6 mr-1 g-text-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                <span class="font-bold text-gray-700" data-translate="company_name">VICINITY SAFETY</span>
+        <div class="text-center space-y-1 pb-4 border-b border-gray-200">
+             <div class="flex items-center justify-center text-gray-800 text-2xl">
+                <span class="font-extrabold g-text-blue" data-translate="company_name">VICINITY SAFETY</span>
             </div>
             <div class="text-gray-500 text-sm">
                 <span class="font-medium text-green-600 mr-2" data-translate="secure_payment">SECURE PAYMENT</span>
