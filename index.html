@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Submission | VICINITY SAFETY</title>
+    <title data-translate="title">Payment Submission | VICINITY SAFETY</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script src="https://www.google.com/recaptcha/enterprise.js?render=6Ldm0AssAAAAAMIE9rP6GwaCTGvgA2RYBWOBBE7aW" async defer></script>
@@ -29,17 +29,73 @@
             }
         }
         
-        // Function to show transient error message
+        // --- TRANSLATION DATA ---
+        const translations = {
+            en: {
+                title: "Payment Submission | VICINITY SAFETY", company_name: "VICINITY SAFETY", secure_payment: "SECURE PAYMENT", account_no: "Account No:", copy_no: "Copy No.", payment_steps_title: "Payment Steps:",
+                step_1: "Fill out and submit your details below (protected by Google).", step_2: "Scan the QR code with your mobile banking app to pay.", step_3: "Verify the recipient is VICINITY SAFETY CO., LTD.",
+                form_title: "Order Details Submission", name_label: "Your Name", name_placeholder: "e.g., John Smith", phone_label: "Your Phone Number", phone_placeholder: "e.g., 09XX XXX XXX", submit_btn: "Submit Order Details", submitting_btn: "Securing details...",
+                name_phone_required: "Please fill out both Name and Phone Number fields.", security_failed: "Security check failed. Please try refreshing the page.", confirmation_success: "Order Details Submitted Successfully! 🎉",
+                confirmation_message: "Thank you. Please complete the VietQR transfer now.", conf_note: "*Security Token Acquired. Final payment confirmation required via bank transfer.*", conf_name: "Name:", conf_phone: "Phone:", privacy_link: "Privacy Policy & Terms of Service", note_description: "*Note: Your bank's description should include the details above for reconciliation."
+            },
+            vi: {
+                title: "Xác nhận Thanh toán | VICINITY SAFETY", company_name: "VICINITY SAFETY", secure_payment: "THANH TOÁN AN TOÀN", account_no: "Số tài khoản:", copy_no: "Sao chép", payment_steps_title: "Các bước Thanh toán:",
+                step_1: "Điền và gửi thông tin của bạn (được bảo vệ bởi Google).", step_2: "Quét mã QR bằng ứng dụng ngân hàng di động của bạn để thanh toán.", step_3: "Xác minh người nhận là VICINITY SAFETY CO., LTD.",
+                form_title: "Gửi Thông tin Đơn hàng", name_label: "Tên của bạn", name_placeholder: "Ví dụ: Nguyễn Văn A", phone_label: "Số điện thoại của bạn", phone_placeholder: "Ví dụ: 09XX XXX XXX", submit_btn: "Gửi Thông tin Đơn hàng", submitting_btn: "Đang bảo mật thông tin...",
+                name_phone_required: "Vui lòng điền đầy đủ cả Tên và Số điện thoại.", security_failed: "Kiểm tra bảo mật thất bại. Vui lòng thử làm mới trang.", confirmation_success: "Gửi Thông tin Đơn hàng Thành công! 🎉",
+                confirmation_message: "Cảm ơn bạn. Vui lòng hoàn tất chuyển khoản VietQR ngay bây giờ.", conf_note: "*Đã lấy mã bảo mật. Cần xác nhận thanh toán cuối cùng qua chuyển khoản ngân hàng.*", conf_name: "Tên:", conf_phone: "Số điện thoại:", privacy_link: "Chính sách Bảo mật & Điều khoản Dịch vụ", note_description: "*Lưu ý: Nội dung chuyển khoản nên bao gồm thông tin trên để đối chiếu."
+            },
+            zh: {
+                title: "付款提交 | VICINITY SAFETY", company_name: "VICINITY SAFETY", secure_payment: "安全支付", account_no: "账号:", copy_no: "复制", payment_steps_title: "付款步骤:",
+                step_1: "填写并提交您的详细信息 (受 Google 保护).", step_2: "使用您的手机银行应用扫描二维码进行支付.", step_3: "验证收款人是 VICINITY SAFETY CO., LTD.",
+                form_title: "订单详情提交", name_label: "您的姓名", name_placeholder: "例如：张三", phone_label: "您的电话号码", phone_placeholder: "例如：09XX XXX XXX", submit_btn: "提交订单详情", submitting_btn: "正在保护信息...",
+                name_phone_required: "请填写姓名和电话号码字段.", security_failed: "安全检查失败. 请尝试刷新页面.", confirmation_success: "订单详情提交成功! 🎉",
+                confirmation_message: "谢谢您. 请立即完成 VietQR 转账.", conf_note: "*已获取安全令牌. 最终付款确认需通过银行转账.*", conf_name: "姓名:", conf_phone: "电话:", privacy_link: "隐私政策与服务条款", note_description: "*注意：您的银行转账说明应包含上述信息以便核对."
+            }
+        };
+
+        let currentLang = 'en';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.title = translations[lang].title;
+
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                const text = translations[lang][key];
+
+                if (element.tagName === 'INPUT') {
+                    if (element.placeholder) {
+                        element.placeholder = text;
+                    }
+                } else if (element.tagName === 'BUTTON') {
+                    element.textContent = text;
+                } else if (element.tagName === 'A') {
+                    element.textContent = text;
+                } else {
+                    element.textContent = text;
+                }
+            });
+        }
+
+        // Initialize language
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedLang = localStorage.getItem('paymentLang') || 'en';
+            document.getElementById('language-select').value = storedLang;
+            changeLanguage(storedLang);
+        });
+        
+        // --- EXISTING UTILITY FUNCTIONS ---
+        
         function showValidationError(message) {
             const errorElement = document.getElementById('validation-error');
             errorElement.textContent = message;
             errorElement.classList.remove('hidden');
             setTimeout(() => {
                 errorElement.classList.add('hidden');
-            }, 5000); // Hide error after 5 seconds
+            }, 5000);
         }
 
-        // Function to format the phone number
         function formatPhoneNumber(input) {
             let value = input.value.replace(/\D/g, ''); 
             if (value.length > 10) value = value.slice(0, 10);
@@ -55,66 +111,60 @@
         }
 
         // ASYNCHRONOUS FORM SUBMISSION using reCAPTCHA Enterprise
-        function handleSubmit(event) {
-            event.preventDefault(); // Stop form from standard submission
+        async function handleSubmit(event) {
+            event.preventDefault();
 
             const name = document.getElementById('name').value;
             const phone = document.getElementById('phone').value;
             const submitButton = document.getElementById('submit-btn');
 
             if (!name || !phone) {
-                showValidationError("Please fill out both Name and Phone Number fields.");
+                showValidationError(translations[currentLang].name_phone_required);
                 return;
             }
 
-            // Temporarily disable button and show loading state
             submitButton.disabled = true;
-            submitButton.textContent = 'Securing details...'; 
+            submitButton.textContent = translations[currentLang].submitting_btn; 
 
-            // 2. Execute reCAPTCHA Enterprise to get a security token
+            // Execute reCAPTCHA Enterprise to get a security token
             grecaptcha.enterprise.ready(async () => {
                 try {
+                    // Site Key used for execution: 6Ldm0AssAAAAAMIE9rP6GwaCTGvgA2RYBWOBBE7aW
                     const token = await grecaptcha.enterprise.execute('6Ldm0AssAAAAAMIE9rP6GwaCTGvgA2RYBWOBBE7aW', {action: 'submit_payment_details'});
-
-                    // --- PASSED SECURITY CHECK ---
                     
-                    // NOTE: In a live environment, you must send this 'token' 
-                    // to your server for final verification using your Secret Key!
+                    // --- PASSED SECURITY CHECK ---
                     
                     const formContainer = document.getElementById('details-form');
                     const confirmationBox = document.getElementById('confirmation-box');
                     const confirmationText = document.getElementById('confirmation-text');
 
-                    // 1. Update the confirmation message
+                    // Update the confirmation message
                     confirmationText.innerHTML = `
                         <div class="space-y-3">
-                            <p class="font-semibold text-lg text-green-600">Order Details Submitted Successfully! 🎉</p>
-                            <p class="text-gray-700">Thank you. Please complete the **VietQR transfer** now.</p>
+                            <p class="font-semibold text-lg text-green-600" style="color: #16a34a;">${translations[currentLang].confirmation_success}</p>
+                            <p class="text-gray-700">${translations[currentLang].confirmation_message}</p>
                             <hr class="border-gray-200">
                             <p class="text-sm">
-                                <span class="font-medium text-gray-900">Name:</span> ${name}<br>
-                                <span class="font-medium text-gray-900">Phone:</span> ${phone}
+                                <span class="font-medium text-gray-900">${translations[currentLang].conf_name}</span> ${name}<br>
+                                <span class="font-medium text-gray-900">${translations[currentLang].conf_phone}</span> ${phone}
                             </p>
                             <p class="text-xs text-gray-500 mt-2">
-                                *Security Token Acquired. Final payment confirmation required via bank transfer.*
+                                ${translations[currentLang].conf_note}
                             </p>
                         </div>
                     `;
 
-                    // 2. Hide the form and show the confirmation message
                     formContainer.classList.add('hidden');
                     confirmationBox.classList.remove('hidden');
 
                 } catch (error) {
                     submitButton.disabled = false;
-                    submitButton.textContent = 'Submit Order Details';
-                    showValidationError("Security check failed. Please try refreshing the page.");
-                    console.error("reCAPTCHA Error:", error);
+                    submitButton.textContent = translations[currentLang].submit_btn;
+                    showValidationError(translations[currentLang].security_failed);
                 }
             });
         }
 
-        // Simple utility function to copy text to clipboard
         function copyText(text, elementId) {
             // ... (copy logic remains the same)
             if (!navigator.clipboard) {
@@ -133,7 +183,7 @@
             const button = document.getElementById(elementId);
             button.innerHTML = '<svg class="w-4 h-4 mr-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Copied!';
             setTimeout(() => {
-                button.innerHTML = '<svg class="w-4 h-4 mr-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v4m4-4v4m4-4v4m-4-4h.01M8 11h.01M16 11h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Copy No.';
+                button.innerHTML = translations[currentLang].copy_no;
             }, 3000);
         }
     </script>
@@ -143,15 +193,24 @@
 
     <div class="w-full max-w-sm bg-white p-6 rounded-xl shadow-lg border border-gray-100 space-y-6">
 
+        <div class="flex justify-end">
+            <select id="language-select" onchange="changeLanguage(this.value)" class="p-1 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                <option value="en">English</option>
+                <option value="vi">Tiếng Việt</option>
+                <option value="zh">中文 (Chinese)</option>
+            </select>
+        </div>
+
         <div class="text-center space-y-2">
              <div class="flex items-center justify-center text-gray-800 text-lg">
                 <svg class="w-6 h-6 mr-1 g-text-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                <span class="font-bold text-gray-700">VICINITY SAFETY</span>
+                <span class="font-bold text-gray-700" data-translate="company_name">VICINITY SAFETY</span>
             </div>
             <div class="text-gray-500 text-sm">
-                <span>Account No: 318851299</span>
+                <span class="font-medium text-green-600 mr-2" data-translate="secure_payment">SECURE PAYMENT</span>
+                <span data-translate="account_no">Account No:</span> 318851299
                 <button id="copy-btn" onclick="copyText('318851299', 'copy-btn')" 
-                        class="ml-2 text-xs text-blue-500 hover:text-blue-700 transition duration-150">
+                        class="ml-2 text-xs text-blue-500 hover:text-blue-700 transition duration-150" data-translate="copy_no">
                     Copy No.
                 </button>
             </div>
@@ -164,37 +223,37 @@
         </div>
 
         <div class="text-sm text-gray-700 space-y-2 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
-            <p class="font-semibold text-gray-800">Payment Steps:</p>
+            <p class="font-semibold text-gray-800" data-translate="payment_steps_title">Payment Steps:</p>
             <ol class="list-decimal list-inside space-y-1">
-                <li>Fill out and **submit your details** below (protected by Google).</li>
-                <li>Scan the QR code with your mobile banking app to pay.</li>
-                <li>Verify the recipient is **VICINITY SAFETY CO., LTD**.</li>
+                <li data-translate="step_1">Fill out and **submit your details** below (protected by Google).</li>
+                <li data-translate="step_2">Scan the QR code with your mobile banking app to pay.</li>
+                <li data-translate="step_3">Verify the recipient is **VICINITY SAFETY CO., LTD**.</li>
             </ol>
         </div>
         
         <form id="details-form" onsubmit="handleSubmit(event)" class="space-y-4">
-            <h2 class="text-lg font-semibold text-gray-800 border-b pb-2">Order Details Submission</h2>
+            <h2 class="text-lg font-semibold text-gray-800 border-b pb-2" data-translate="form_title">Order Details Submission</h2>
 
             <div id="validation-error" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-3 text-sm rounded-md" role="alert">
                 </div>
 
             <div>
-                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-1" data-translate="name_label">Your Name</label>
                 <input type="text" id="name" name="name" required
-                       placeholder="e.g., John Smith"
+                       data-translate="name_placeholder" placeholder="e.g., John Smith"
                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
             </div>
 
             <div>
-                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Your Phone Number</label>
+                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1" data-translate="phone_label">Your Phone Number</label>
                 <input type="tel" id="phone" name="phone" required
                        oninput="formatPhoneNumber(this)"
                        title="Phone number must be 8-15 digits long"
-                       placeholder="e.g., 09XX XXX XXX"
+                       data-translate="phone_placeholder" placeholder="e.g., 09XX XXX XXX"
                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
             </div>
             
-            <button type="submit" id="submit-btn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-md text-sm font-medium text-white g-blue hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150">
+            <button type="submit" id="submit-btn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-md text-sm font-medium text-white g-blue hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150" data-translate="submit_btn">
                 Submit Order Details
             </button>
         </form>
@@ -208,10 +267,9 @@
         </div>
 
         <div class="text-center pt-2 border-t border-gray-100">
-            <a href="#" class="text-xs text-gray-400 hover:text-blue-500">Privacy Policy & Terms of Service</a>
+            <a href="#" class="text-xs text-gray-400 hover:text-blue-500" data-translate="privacy_link">Privacy Policy & Terms of Service</a>
         </div>
 
     </div>
 </body>
 </html>
-```eof
