@@ -8,7 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
-        .g-blue { background-color: #4285F4; }
         .g-text-blue { color: #4285F4; }
         .flag-button {
             font-size: 1.5rem; line-height: 1; padding: 0 4px; cursor: pointer;
@@ -40,10 +39,9 @@
                 payment_steps_title: "Payment Steps:",
                 step_1: "Scan the QR code with your mobile banking app to pay.", 
                 step_2: "Verify the recipient is VICINITY SAFETY CO., LTD.",
-                step_3: "Return to the Checkout page to complete the transaction.", // BƯỚC CẬP NHẬT
+                step_3: "Return to the Checkout page to complete the transaction.", // BƯỚC CUỐI
                 transfer_note: "Please remember to enter the correct amount and your Name/Phone number in the transfer description (e.g., Tuan Tran 1234567890).", 
                 privacy_link: "Privacy Policy & Terms of Service",
-                return_checkout: "Return to Checkout Page" // TEXT NÚT MỚI
             },
             vi: {
                 title: "Cổng Thanh Toán QR | VICINITY SAFETY", 
@@ -54,10 +52,9 @@
                 payment_steps_title: "Các bước Thanh toán:",
                 step_1: "Quét mã QR bằng ứng dụng ngân hàng di động của bạn để thanh toán.", 
                 step_2: "Xác minh người nhận là VICINITY SAFETY CO., LTD.",
-                step_3: "Trở lại trang Thanh toán (Checkout) để hoàn tất giao dịch.", // BƯỚC CẬP NHẬT
+                step_3: "Trở lại trang Thanh toán (Checkout) để hoàn tất giao dịch.", // BƯỚC CUỐI
                 transfer_note: "Quý khách vui lòng nhớ điền đúng số tiền và thông tin tên/SĐT trong nội dung chuyển tiền (VD: Tuan Tran 1234567890).", 
                 privacy_link: "Chính sách Bảo mật & Điều khoản Dịch vụ",
-                return_checkout: "Trở lại trang Thanh toán" // TEXT NÚT MỚI
             }
         };
 
@@ -95,15 +92,6 @@
             button.innerHTML = '<svg class="w-4 h-4 mr-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Đã sao chép!'; 
             setTimeout(() => { button.textContent = originalText; }, 3000);
         }
-
-        // --- CHỨC NĂNG QUAY LẠI (SỬ DỤNG TRONG THỰC TẾ) ---
-        function returnToCheckout() {
-            // Trong ứng dụng thực tế, đây là nơi bạn sẽ thêm logic chuyển hướng:
-            // window.location.href = 'https://yourdomain.com/checkout-page';
-            
-            alert('Chức năng: Chuyển hướng về trang Checkout (Thanh toán).');
-        }
-
     </script>
 </head>
 
@@ -153,11 +141,7 @@
                 </ol>
             </div>
             
-            <button onclick="returnToCheckout()" 
-                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-sm font-medium text-white g-blue hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 mt-4">
-                <span data-translate="return_checkout">Trở lại trang Thanh toán</span>
-            </button>
-        </div>
+            </div>
         
         <div class="text-center pt-2 border-t border-gray-100">
             <a href="#" class="text-xs text-gray-400 hover:text-blue-500" data-translate="privacy_link">Chính sách Bảo mật & Điều khoản Dịch vụ</a>
