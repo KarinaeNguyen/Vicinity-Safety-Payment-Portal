@@ -10,14 +10,26 @@
     <script src="https://www.google.com/recaptcha/enterprise.js?render=6Ldm0AssAAAAAMIE9rP6GwaCTGvgA2RYBWOBBE7aW" async defer></script>
     
     <style>
-        /* CSS remains the same */
-        .g-blue { background-color: #4285F4; }
-        .g-text-blue { color: #4285F4; }
-        .flag-button {
-            font-size: 1.5rem; line-height: 1; padding: 0 4px; cursor: pointer;
-            opacity: 0.6; transition: opacity 0.2s; border: none; background: none;
+        /* Google-inspired design colors */
+        .g-blue {
+            background-color: #4285F4;
         }
-        .flag-button:hover, .flag-button.active { opacity: 1; }
+        .g-text-blue {
+            color: #4285F4;
+        }
+        .flag-button {
+            font-size: 1.5rem;
+            line-height: 1;
+            padding: 0 4px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            border: none;
+            background: none;
+        }
+        .flag-button:hover, .flag-button.active {
+            opacity: 1;
+        }
     </style>
     
     <script>
@@ -38,6 +50,7 @@
                 step_1: "Click 'Verify Security' to display the QR code.", step_2: "Scan the QR code with your mobile banking app to pay.", step_3: "Verify the recipient is VICINITY SAFETY CO., LTD.",
                 check_btn: "Verify Security to View QR", checking_btn: "Verifying security...", 
                 security_failed: "Security check failed. Please try refreshing the page.", 
+                transfer_note: "Please remember to enter the correct amount and your Name/Phone number in the transfer description (e.g., Tuan Tran 1234567890).",
                 privacy_link: "Privacy Policy & Terms of Service"
             },
             vi: {
@@ -45,6 +58,7 @@
                 step_1: "Nhấp vào 'Xác minh Bảo mật' để hiển thị mã QR.", step_2: "Quét mã QR bằng ứng dụng ngân hàng di động của bạn để thanh toán.", step_3: "Xác minh người nhận là VICINITY SAFETY CO., LTD.",
                 check_btn: "Xác minh Bảo mật để xem QR", checking_btn: "Đang xác minh bảo mật...", 
                 security_failed: "Kiểm tra bảo mật thất bại. Vui lòng thử làm mới trang.", 
+                transfer_note: "Quý khách vui lòng nhớ điền đúng số tiền và thông tin tên/SĐT trong nội dung chuyển tiền (VD: Tuan Tran 1234567890).",
                 privacy_link: "Chính sách Bảo mật & Điều khoản Dịch vụ"
             },
             zh: {
@@ -52,13 +66,13 @@
                 step_1: "点击'验证安全'以显示二维码.", step_2: "使用您的手机银行应用扫描二维码进行支付.", step_3: "验证收款人是 VICINITY SAFETY CO., LTD.",
                 check_btn: "验证安全以查看 QR", checking_btn: "正在验证安全...", 
                 security_failed: "安全检查失败. 请尝试刷新页面.", 
+                transfer_note: "请务必在转账说明中填写正确的金额和您的姓名/电话号码 (例如: Tuan Tran 1234567890)。",
                 privacy_link: "隐私政策与服务条款"
             }
         };
 
         let currentLang = 'vi';
 
-        // --- CÁC HÀM CƠ BẢN (REMAINS) ---
         function changeLanguage(lang) {
             currentLang = lang;
             document.title = translations[lang].title;
@@ -74,7 +88,17 @@
                 const text = translations[lang][key];
                 element.textContent = text;
             });
-            document.getElementById('check-security-btn').textContent = translations[currentLang].check_btn;
+            // Cập nhật text cho nút xác minh bảo mật
+            const checkButton = document.getElementById('check-security-btn');
+            if (checkButton) {
+                if (checkButton.disabled) {
+                    checkButton.textContent = translations[currentLang].checking_btn;
+                } else {
+                    checkButton.textContent = translations[currentLang].check_btn;
+                }
+            }
+            // Cập nhật copy button text
+            document.getElementById('copy-btn').textContent = translations[currentLang].copy_no;
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -90,8 +114,19 @@
         }
 
         function copyText(text, elementId) {
-            if (!navigator.clipboard) { /* ... fallback logic ... */ } 
-            else { navigator.clipboard.writeText(text).catch(err => { console.error('Could not copy text: ', err); }); }
+            if (!navigator.clipboard) {
+                const tempInput = document.createElement('textarea');
+                tempInput.value = text;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+            } 
+            else { 
+                navigator.clipboard.writeText(text).catch(err => { 
+                    console.error('Could not copy text: ', err); 
+                }); 
+            }
 
             const button = document.getElementById(elementId);
             const originalText = button.textContent;
@@ -110,10 +145,6 @@
                 try {
                     // 1. CHẠY reCAPTCHA
                     const token = await grecaptcha.enterprise.execute('6Ldm0AssAAAAAMIE9rP6GwaCTGvgA2RYBWOBBE7aW', {action: 'view_qr_code'});
-                    
-                    // LƯU Ý BẢO MẬT: Sau khi có token, bạn vẫn NÊN gửi nó lên server 
-                    // để kiểm tra điểm số (score) nếu bạn muốn bảo mật tối đa.
-                    // Tuy nhiên, đối với giải pháp client-side đơn giản, ta sẽ bỏ qua bước đó.
                     
                     // 2. NẾU THÀNH CÔNG, HIỂN THỊ QR VÀ ẨN NÚT
                     document.getElementById('qr-security-check').classList.add('hidden');
@@ -154,10 +185,16 @@
             </div>
         </div>
 
-        <div id="qr-code-display" class="hidden p-4 bg-white rounded-lg shadow-inner border border-gray-200">
+        <div id="qr-code-display" class="hidden p-4 bg-white rounded-lg shadow-inner border border-gray-200 space-y-3">
             <img src="Company Bank QR.png" 
                   alt="VietQR Payment Code for Techcombank" 
                   class="w-full h-auto rounded-md">
+            
+            <div class="p-3 bg-yellow-100 border border-yellow-300 rounded-lg text-sm text-gray-700">
+                <p class="font-medium" data-translate="transfer_note">
+                    Quý khách vui lòng nhớ điền đúng số tiền và thông tin tên/SĐT trong nội dung chuyển tiền (VD: Tuan Tran 1234567890).
+                </p>
+            </div>
         </div>
         
         <div id="qr-security-check" class="space-y-4">
