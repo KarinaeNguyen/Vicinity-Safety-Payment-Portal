@@ -17,18 +17,64 @@
     </style>
     
     <script>
-        // --- DỮ LIỆU DỊCH THUẬT CƠ BẢN ---
+        // Cấu hình Tailwind (nếu cần)
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Roboto', 'Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+        
+        // --- DỮ LIỆU DỊCH THUẬT (TRANSLATION DATA) ---
         const translations = {
             en: {
-                title: "QR Payment Gate | VICINITY SAFETY", company_name: "VICINITY SAFETY", secure_payment: "SECURE PAYMENT", account_no: "Account No:", copy_no: "Copy No.", payment_steps_title: "Payment Steps:",
-                step_1: "Scan the QR code with your mobile banking app to pay.", step_2: "Verify the recipient is VICINITY SAFETY CO., LTD.",
-                transfer_note: "Please remember to enter the correct amount and your Name/Phone number in the transfer description (e.g., Tuan Tran 1234567890).", privacy_link: "Privacy Policy & Terms of Service"
+                title: "QR Payment Gate | VICINITY SAFETY", 
+                company_name: "VICINITY SAFETY", 
+                secure_payment: "SECURE PAYMENT", 
+                account_no: "Account No:", 
+                copy_no: "Copy No.", 
+                payment_steps_title: "Payment Steps:",
+                step_1: "Scan the QR code with your mobile banking app to pay.", 
+                step_2: "Verify the recipient is VICINITY SAFETY CO., LTD.",
+                transfer_note: "Please remember to enter the correct amount and your Name/Phone number in the transfer description (e.g., Tuan Tran 1234567890).", 
+                privacy_link: "Privacy Policy & Terms of Service",
+                
+                // New translations for Step 3
+                review_order_title: "Review and Place Order",
+                review_order_instruction: "Please review the information above and proceed when you are ready.",
+                agree_terms: "I agree with the ",
+                terms_and_conditions: "Terms & Conditions",
+                return_policy: ", Return Policy",
+                purchase_confirmation: " and Purchase Confirmation & Transaction Information",
+                place_order_btn: "Place Order and Pay",
+                continue_to_review: "Continue to Review"
             },
             vi: {
-                title: "Cổng Thanh Toán QR | VICINITY SAFETY", company_name: "VICINITY SAFETY", secure_payment: "THANH TOÁN AN TOÀN", account_no: "Số tài khoản:", copy_no: "Sao chép", payment_steps_title: "Các bước Thanh toán:",
-                step_1: "Quét mã QR bằng ứng dụng ngân hàng di động của bạn để thanh toán.", step_2: "Xác minh người nhận là VICINITY SAFETY CO., LTD.",
-                transfer_note: "Quý khách vui lòng nhớ điền đúng số tiền và thông tin tên/SĐT trong nội dung chuyển tiền (VD: Tuan Tran 1234567890).", privacy_link: "Chính sách Bảo mật & Điều khoản Dịch vụ"
+                title: "Cổng Thanh Toán QR | VICINITY SAFETY", 
+                company_name: "VICINITY SAFETY", 
+                secure_payment: "THANH TOÁN AN TOÀN", 
+                account_no: "Số tài khoản:", 
+                copy_no: "Sao chép", 
+                payment_steps_title: "Các bước Thanh toán:",
+                step_1: "Quét mã QR bằng ứng dụng ngân hàng di động của bạn để thanh toán.", 
+                step_2: "Xác minh người nhận là VICINITY SAFETY CO., LTD.",
+                transfer_note: "Quý khách vui lòng nhớ điền đúng số tiền và thông tin tên/SĐT trong nội dung chuyển tiền (VD: Tuan Tran 1234567890).", 
+                privacy_link: "Chính sách Bảo mật & Điều khoản Dịch vụ",
+                
+                // New translations for Step 3
+                review_order_title: "Xem lại và đặt đơn hàng",
+                review_order_instruction: "Hãy xem lại thông tin trên và tiếp tục khi bạn đã sẵn sàng.",
+                agree_terms: "Tôi đồng ý với ",
+                terms_and_conditions: "Điều khoản và Điều kiện",
+                return_policy: ", Chính sách trả hàng",
+                purchase_confirmation: " và Xác nhận mua hàng và thông tin giao dịch",
+                place_order_btn: "Đặt hàng và thanh toán",
+                continue_to_review: "Tiếp tục xem lại"
             }
+            // Không có ZH trong phiên bản này để đơn giản hóa, có thể thêm sau
         };
 
         let currentLang = 'vi';
@@ -46,14 +92,45 @@
             document.querySelectorAll('[data-translate]').forEach(element => {
                 const key = element.getAttribute('data-translate');
                 const text = translations[lang][key];
-                element.textContent = text;
+                
+                // Xử lý đặc biệt cho checkbox để tránh ghi đè link
+                if (key === 'agree_terms' || key === 'terms_and_conditions' || key === 'return_policy' || key === 'purchase_confirmation') {
+                    // Không làm gì, sẽ được xử lý riêng trong DOM manipulation
+                } else if (element.tagName === 'A') {
+                    element.textContent = text;
+                } else {
+                    element.textContent = text;
+                }
             });
             document.getElementById('copy-btn').textContent = translations[currentLang].copy_no;
+            
+            // Cập nhật lại nội dung checkbox (để giữ nguyên các thẻ <a>)
+            updateAgreeTermsText();
         }
+
+        function updateAgreeTermsText() {
+            const checkboxLabel = document.getElementById('agree-terms-label');
+            if (checkboxLabel) {
+                checkboxLabel.innerHTML = `
+                    <span data-translate="agree_terms">${translations[currentLang].agree_terms}</span>
+                    <a href="#" class="text-blue-600 hover:underline">${translations[currentLang].terms_and_conditions}</a>
+                    <span data-translate="return_policy">${translations[currentLang].return_policy}</span>
+                    <a href="#" class="text-blue-600 hover:underline">${translations[currentLang].purchase_confirmation}</a>
+                    <span class="text-red-500">*</span>
+                `;
+            }
+            // Cập nhật text của nút
+            const placeOrderBtn = document.getElementById('place-order-btn');
+            if(placeOrderBtn) {
+                placeOrderBtn.textContent = translations[currentLang].place_order_btn;
+            }
+        }
+
 
         document.addEventListener('DOMContentLoaded', () => {
             const storedLang = localStorage.getItem('paymentLang') || 'vi';
             changeLanguage(storedLang);
+            updateAgreeTermsText(); // Gọi lần đầu để setup đúng
         });
         
         // --- HÀM SAO CHÉP (COPY) ---
@@ -65,6 +142,30 @@
             button.innerHTML = '<svg class="w-4 h-4 mr-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Đã sao chép!'; 
             setTimeout(() => { button.textContent = originalText; }, 3000);
         }
+
+        // --- CHỨC NĂNG CHUYỂN MÀN HÌNH ---
+        function showReviewScreen() {
+            document.getElementById('qr-payment-screen').classList.add('hidden');
+            document.getElementById('review-order-screen').classList.remove('hidden');
+        }
+
+        function togglePlaceOrderButton() {
+            const checkbox = document.getElementById('agree-terms-checkbox');
+            const placeOrderBtn = document.getElementById('place-order-btn');
+            if (placeOrderBtn) { // Đảm bảo nút tồn tại trước khi thao tác
+                placeOrderBtn.disabled = !checkbox.checked;
+                placeOrderBtn.classList.toggle('opacity-50', !checkbox.checked);
+                placeOrderBtn.classList.toggle('cursor-not-allowed', !checkbox.checked);
+            }
+        }
+        
+        // Khi người dùng bấm "Đặt hàng và thanh toán"
+        function placeOrderAndPay() {
+            alert('Đơn hàng đã được đặt và sẵn sàng thanh toán!'); // Thay thế bằng logic xử lý đơn hàng thực tế
+            // Sau khi đặt hàng thành công, có thể chuyển hướng hoặc hiển thị thông báo khác
+            // window.location.href = '/order-success'; 
+        }
+
     </script>
 </head>
 
@@ -75,41 +176,66 @@
         <div class="flex justify-end space-x-1">
             <button id="flag-en" class="flag-button" onclick="changeLanguage('en')" title="English">🇺🇸</button>
             <button id="flag-vi" class="flag-button active" onclick="changeLanguage('vi')" title="Tiếng Việt">🇻🇳</button>
-            </div>
-
-        <div class="text-center space-y-1 pb-4 border-b border-gray-200">
-             <div class="flex items-center justify-center text-gray-800 text-2xl">
-                <span class="font-extrabold g-text-blue" data-translate="company_name">VICINITY SAFETY</span>
-            </div>
-            <div class="text-gray-500 text-sm">
-                <span class="font-medium text-green-600 mr-2" data-translate="secure_payment">THANH TOÁN AN TOÀN</span>
-                <span data-translate="account_no">Số tài khoản:</span> 318851299
-                <button id="copy-btn" onclick="copyText('318851299', 'copy-btn')" 
-                        class="ml-2 text-xs text-blue-500 hover:text-blue-700 transition duration-150" data-translate="copy_no">
-                    Sao chép
-                </button>
-            </div>
         </div>
 
-        <div id="qr-code-display" class="p-4 bg-white rounded-lg shadow-inner border border-gray-200 space-y-3">
-            <img src="Company Bank QR.png" 
-                  alt="VietQR Payment Code for Techcombank" 
-                  class="w-full h-auto rounded-md">
+        <div id="qr-payment-screen">
+            <div class="text-center space-y-1 pb-4 border-b border-gray-200">
+                 <div class="flex items-center justify-center text-gray-800 text-2xl">
+                    <span class="font-extrabold g-text-blue" data-translate="company_name">VICINITY SAFETY</span>
+                </div>
+                <div class="text-gray-500 text-sm">
+                    <span class="font-medium text-green-600 mr-2" data-translate="secure_payment">THANH TOÁN AN TOÀN</span>
+                    <span data-translate="account_no">Số tài khoản:</span> 318851299
+                    <button id="copy-btn" onclick="copyText('318851299', 'copy-btn')" 
+                            class="ml-2 text-xs text-blue-500 hover:text-blue-700 transition duration-150" data-translate="copy_no">
+                        Sao chép
+                    </button>
+                </div>
+            </div>
+
+            <div id="qr-code-display" class="p-4 bg-white rounded-lg shadow-inner border border-gray-200 space-y-3">
+                <img src="Company Bank QR.png" 
+                      alt="VietQR Payment Code for Techcombank" 
+                      class="w-full h-auto rounded-md">
+                
+                <div class="p-3 bg-yellow-100 border border-yellow-300 rounded-lg text-sm text-gray-700">
+                    <p class="font-medium" data-translate="transfer_note">
+                        Quý khách vui lòng nhớ điền đúng số tiền và thông tin tên/SĐT trong nội dung chuyển tiền (VD: Tuan Tran 1234567890).
+                    </p>
+                </div>
+            </div>
+
+            <div class="text-sm text-gray-700 space-y-2 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                <p class="font-semibold text-gray-800" data-translate="payment_steps_title">Các bước Thanh toán:</p>
+                <ol class="list-decimal list-inside space-y-1">
+                    <li data-translate="step_1">Quét mã QR bằng ứng dụng ngân hàng di động của bạn để thanh toán.</li>
+                    <li data-translate="step_2">Xác minh người nhận là **VICINITY SAFETY CO., LTD**.</li>
+                </ol>
+            </div>
             
-            <div class="p-3 bg-yellow-100 border border-yellow-300 rounded-lg text-sm text-gray-700">
-                <p class="font-medium" data-translate="transfer_note">
-                    Quý khách vui lòng nhớ điền đúng số tiền và thông tin tên/SĐT trong nội dung chuyển tiền (VD: Tuan Tran 1234567890).
-                </p>
-            </div>
+            <button onclick="showReviewScreen()" 
+                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-sm font-medium text-white g-blue hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 mt-4">
+                <span data-translate="continue_to_review">Tiếp tục xem lại</span>
+            </button>
         </div>
 
-        <div class="text-sm text-gray-700 space-y-2 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
-            <p class="font-semibold text-gray-800" data-translate="payment_steps_title">Các bước Thanh toán:</p>
-            <ol class="list-decimal list-inside space-y-1">
-                <li data-translate="step_1">Quét mã QR bằng ứng dụng ngân hàng di động của bạn để thanh toán.</li>
-                <li data-translate="step_2">Xác minh người nhận là **VICINITY SAFETY CO., LTD**.</li>
-            </ol>
+        <div id="review-order-screen" class="hidden space-y-4">
+            <h2 class="text-xl font-bold text-gray-800" data-translate="review_order_title">Xem lại và đặt đơn hàng</h2>
+            <p class="text-gray-700 text-sm" data-translate="review_order_instruction">Hãy xem lại thông tin trên và tiếp tục khi bạn đã sẵn sàng.</p>
+
+            <div class="flex items-start">
+                <input type="checkbox" id="agree-terms-checkbox" class="form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out mt-1" onchange="togglePlaceOrderButton()">
+                <label for="agree-terms-checkbox" class="ml-2 block text-sm text-gray-900" id="agree-terms-label">
+                    </label>
+            </div>
+
+            <button id="place-order-btn" onclick="placeOrderAndPay()" disabled
+                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-sm font-medium text-white bg-blue-500 opacity-50 cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150"
+                    data-translate="place_order_btn">
+                Đặt hàng và thanh toán
+            </button>
         </div>
+
 
         <div class="text-center pt-2 border-t border-gray-100">
             <a href="#" class="text-xs text-gray-400 hover:text-blue-500" data-translate="privacy_link">Chính sách Bảo mật & Điều khoản Dịch vụ</a>
