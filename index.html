@@ -8,84 +8,46 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
-        /* Google-inspired design colors */
-        .g-blue {
-            background-color: #4285F4;
-        }
-        .g-text-blue {
-            color: #4285F4;
-        }
+        .g-text-blue { color: #4285F4; }
         .flag-button {
-            font-size: 1.5rem;
-            line-height: 1;
-            padding: 0 4px;
-            cursor: pointer;
-            opacity: 0.6;
-            transition: opacity 0.2s;
-            border: none;
-            background: none;
+            font-size: 1.5rem; line-height: 1; padding: 0 4px; cursor: pointer;
+            opacity: 0.6; transition: opacity 0.2s; border: none; background: none;
         }
-        .flag-button:hover, .flag-button.active {
-            opacity: 1;
-        }
+        .flag-button:hover, .flag-button.active { opacity: 1; }
     </style>
     
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Roboto', 'Inter', 'sans-serif'],
-                    },
-                }
-            }
-        }
-        
-        // --- DỮ LIỆU DỊCH THUẬT (TRANSLATION DATA) ---
+        // --- DỮ LIỆU DỊCH THUẬT CƠ BẢN ---
         const translations = {
             en: {
                 title: "QR Payment Gate | VICINITY SAFETY", company_name: "VICINITY SAFETY", secure_payment: "SECURE PAYMENT", account_no: "Account No:", copy_no: "Copy No.", payment_steps_title: "Payment Steps:",
-                step_1: "Scan the QR code with your mobile banking app to pay.", 
-                step_2: "Verify the recipient is VICINITY SAFETY CO., LTD.",
-                transfer_note: "Please remember to enter the correct amount and your Name/Phone number in the transfer description (e.g., Tuan Tran 1234567890).",
-                privacy_link: "Privacy Policy & Terms of Service"
+                step_1: "Scan the QR code with your mobile banking app to pay.", step_2: "Verify the recipient is VICINITY SAFETY CO., LTD.",
+                transfer_note: "Please remember to enter the correct amount and your Name/Phone number in the transfer description (e.g., Tuan Tran 1234567890).", privacy_link: "Privacy Policy & Terms of Service"
             },
             vi: {
                 title: "Cổng Thanh Toán QR | VICINITY SAFETY", company_name: "VICINITY SAFETY", secure_payment: "THANH TOÁN AN TOÀN", account_no: "Số tài khoản:", copy_no: "Sao chép", payment_steps_title: "Các bước Thanh toán:",
-                step_1: "Quét mã QR bằng ứng dụng ngân hàng di động của bạn để thanh toán.", 
-                step_2: "Xác minh người nhận là VICINITY SAFETY CO., LTD.",
-                transfer_note: "Quý khách vui lòng nhớ điền đúng số tiền và thông tin tên/SĐT trong nội dung chuyển tiền (VD: Tuan Tran 1234567890).",
-                privacy_link: "Chính sách Bảo mật & Điều khoản Dịch vụ"
-            },
-            zh: {
-                title: "二维码支付门户 | VICINITY SAFETY", company_name: "VICINITY SAFETY", secure_payment: "安全支付", account_no: "账号:", copy_no: "复制", payment_steps_title: "付款步骤:",
-                step_1: "使用您的手机银行应用扫描二维码进行支付.", 
-                step_2: "验证收款人是 VICINITY SAFETY CO., LTD.",
-                transfer_note: "请务必在转账说明中填写正确的金额和您的姓名/电话号码 (例如: Tuan Tran 1234567890)。",
-                privacy_link: "隐私政策与服务条款"
+                step_1: "Quét mã QR bằng ứng dụng ngân hàng di động của bạn để thanh toán.", step_2: "Xác minh người nhận là VICINITY SAFETY CO., LTD.",
+                transfer_note: "Quý khách vui lòng nhớ điền đúng số tiền và thông tin tên/SĐT trong nội dung chuyển tiền (VD: Tuan Tran 1234567890).", privacy_link: "Chính sách Bảo mật & Điều khoản Dịch vụ"
             }
         };
 
         let currentLang = 'vi';
 
+        // --- HÀM DỊCH THUẬT ---
         function changeLanguage(lang) {
             currentLang = lang;
             document.title = translations[lang].title;
             localStorage.setItem('paymentLang', lang); 
 
-            // Update active state of flag buttons
             document.querySelectorAll('.flag-button').forEach(btn => {
-                btn.classList.remove('active');
+                btn.classList.toggle('active', btn.id === `flag-${lang}`);
             });
-            document.getElementById(`flag-${lang}`).classList.add('active');
 
-            // Update all text content
             document.querySelectorAll('[data-translate]').forEach(element => {
                 const key = element.getAttribute('data-translate');
                 const text = translations[lang][key];
                 element.textContent = text;
             });
-            // Update copy button text
             document.getElementById('copy-btn').textContent = translations[currentLang].copy_no;
         }
 
@@ -94,21 +56,9 @@
             changeLanguage(storedLang);
         });
         
-        // Hàm copyText giữ nguyên
+        // --- HÀM SAO CHÉP (COPY) ---
         function copyText(text, elementId) {
-            if (!navigator.clipboard) {
-                const tempInput = document.createElement('textarea');
-                tempInput.value = text;
-                document.body.appendChild(tempInput);
-                tempInput.select();
-                document.execCommand('copy');
-                document.body.removeChild(tempInput);
-            } 
-            else { 
-                navigator.clipboard.writeText(text).catch(err => { 
-                    console.error('Could not copy text: ', err); 
-                }); 
-            }
+            navigator.clipboard.writeText(text).catch(err => { console.error('Could not copy text: ', err); });
 
             const button = document.getElementById(elementId);
             const originalText = button.textContent;
@@ -125,8 +75,7 @@
         <div class="flex justify-end space-x-1">
             <button id="flag-en" class="flag-button" onclick="changeLanguage('en')" title="English">🇺🇸</button>
             <button id="flag-vi" class="flag-button active" onclick="changeLanguage('vi')" title="Tiếng Việt">🇻🇳</button>
-            <button id="flag-zh" class="flag-button" onclick="changeLanguage('zh')" title="中文">🇨🇳</button>
-        </div>
+            </div>
 
         <div class="text-center space-y-1 pb-4 border-b border-gray-200">
              <div class="flex items-center justify-center text-gray-800 text-2xl">
